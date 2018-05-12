@@ -1,0 +1,4 @@
+Flask==1.0.2
+connexion==1.4
+spec-synthase==0.1.6 
+SQLAlchemy==1.2.7
