@@ -1,0 +1,1 @@
+web: gunicorn billingapi.wsgi:app
