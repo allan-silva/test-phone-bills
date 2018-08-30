@@ -1,0 +1,28 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: Billing API
+  contact:
+    name: Allan Silva
+    email: allan.tavares@allantavares.com.br
+  description: >
+    Billing API receives phone calls information and delivers the incoming request
+    to be processed in a reliable way.
+basePath: /v1
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /info:
+    get:
+      description: Get server information
+      operationId: billingapi.billing.get_info
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Server Information
