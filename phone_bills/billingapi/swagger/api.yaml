@@ -26,3 +26,60 @@ paths:
       responses:
         '200':
           description: Server Information
+  /call:
+    post:
+      description: Receives a call event.
+      operationId: phone_bills.billingapi.billing.call_event
+      produces:
+        - application/json
+      parameters:
+        - name: transaction_id
+          in: header
+          type: string
+          description: Optional transaction id to track this request.
+          required: false
+        - name: call_event
+          in: body
+          description: Call event.
+          required: true
+          schema:
+            $ref: '#/definitions/CallRecordModel'
+      responses:
+        '202':
+          description: Call Start was accepted and queued to be processed.
+        '404':
+          description: Invalid Call Start request.
+        '500':
+          description: Internal Server Error.
+
+definitions:
+  CallRecordModel:
+    type: object
+    required:
+      - id
+      - type
+      - timestamp
+      - call_id
+    properties:
+      id:
+        description: Record unique identificator.
+        type: string
+      type:
+        description: Indicate if it's a call "start" or "end" record.
+        type: string
+        enum:
+          - start
+          - end
+      timestamp:
+        description: The timestamp of when the event occured.
+        type: string
+        format: date-time
+      call_id:
+        description: Unique for each call record pair.
+        type: string
+      source:
+        description: The subscriber phone number that originated the call.
+        type: string
+      destination:
+        description: The phone number receiving the call.
+        type: string
