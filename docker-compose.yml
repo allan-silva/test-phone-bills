@@ -3,9 +3,18 @@ services:
   billingdb:
     image: postgres:10.3
     expose:
-      - "5432"
+      - 5432
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_USER=billingdb_user
       - POSTGRES_PASSWORD=billingdb_pwd
+
+  billingmq:
+    image: rabbitmq:3-management
+    expose:
+      - 5672
+      - 15672
+    ports:
+      - "5672:5672"
+      - "15672:15672"

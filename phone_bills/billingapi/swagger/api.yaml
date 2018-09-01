@@ -20,7 +20,7 @@ paths:
   /info:
     get:
       description: Get server information
-      operationId: billingapi.billing.get_info
+      operationId: phone_bills.billingapi.billing.get_info
       produces:
         - application/json
       responses:

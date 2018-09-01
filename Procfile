@@ -1,1 +1,1 @@
-web: gunicorn billingapi.wsgi:app
+web: gunicorn phone_bills.billingapi.wsgi:app
