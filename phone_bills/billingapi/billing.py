@@ -5,9 +5,10 @@ from phone_bills.billingapi.transaction import with_transaction
 from phone_bills.billingapi.validation import validate_call_record
 
 
-def get_info():
-    app.amqp.info.publish({'id': i, 'info_requested': True})
-    return {'status': 'OK'}
+@with_transaction
+def get_info(transaction):
+    app.log.info("Info requested")
+    return transaction
 
 
 @with_transaction
