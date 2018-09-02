@@ -13,14 +13,15 @@ class BillingAPIProducer:
         self.routing_key = routing_key
         self.serializer = serializer
 
-    def publish(self, payload):
+    def publish(self, payload, headers=None):
         with producers[connection].acquire(block=True, timeout=0.5) as producer:
             producer.publish(
                 payload,
                 exchange=self.exchange,
                 routing_key=self.routing_key,
                 declare=[self.exchange],
-                serializer=self.serializer)
+                serializer=self.serializer,
+                headers=headers)
 
 
 class AmqpExtension:

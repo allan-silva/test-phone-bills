@@ -33,12 +33,7 @@ paths:
       produces:
         - application/json
       parameters:
-        - name: transaction_id
-          in: header
-          type: string
-          description: Optional transaction id to track this request.
-          required: false
-        - name: call_event
+        - name: call_record
           in: body
           description: Call event.
           required: true
@@ -46,7 +41,9 @@ paths:
             $ref: '#/definitions/CallRecordModel'
       responses:
         '202':
-          description: Call Start was accepted and queued to be processed.
+          description: Call record response.
+          schema:
+            $ref: '#/definitions/CallRecordResponseModel'
         '404':
           description: Invalid Call Start request.
         '500':
@@ -63,7 +60,8 @@ definitions:
     properties:
       id:
         description: Record unique identificator.
-        type: string
+        type: integer
+        format: int64
       type:
         description: Indicate if it's a call "start" or "end" record.
         type: string
@@ -76,10 +74,23 @@ definitions:
         format: date-time
       call_id:
         description: Unique for each call record pair.
-        type: string
+        type: integer
+        format: int64
       source:
         description: The subscriber phone number that originated the call.
         type: string
+        format: phone-number
       destination:
         description: The phone number receiving the call.
+        type: string
+        format: phone-number
+
+  CallRecordResponseModel:
+    description: Call record response.
+    type: object
+    required:
+      - transaction_id
+    properties:
+      transaction_id:
+        description: Request transaction id
         type: string
