@@ -8,7 +8,7 @@ FMT = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%
 def configure_log(obj_instance, logger_name):
     console_handler = logging.StreamHandler()
     logger = logging.getLogger(logger_name)
-    logger.setLevel(os.getenv('LOG_LEVEL', logging.DEBUG))
+    logger.setLevel(int(os.getenv('LOG_LEVEL', logging.DEBUG)))
     console_handler.setFormatter(FMT)
     logger.addHandler(console_handler)
     obj_instance.log = logger
