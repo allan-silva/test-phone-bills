@@ -74,3 +74,7 @@ class BillingDb(object):
     @property
     def tariff_conditions(self):
         return self.tariff_conditions_table
+
+
+def create_db(uri):
+    return BillingDb(uri)
