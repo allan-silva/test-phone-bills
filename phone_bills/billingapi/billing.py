@@ -8,6 +8,7 @@ from phone_bills.billingapi.validation import validate_call_record
 @with_transaction
 def get_info(transaction):
     app.log.info("Info requested")
+    app.amqp.info.publish(transaction, headers=transaction)
     return transaction
 
 
