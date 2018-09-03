@@ -9,7 +9,7 @@ connection = Connection(rabbit_url)
 
 class BillingAPIProducer:
     def __init__(self, exchange, routing_key, serializer):
-        self.exchange = Exchange(exchange)
+        self.exchange = Exchange(exchange, type='topic')
         self.routing_key = routing_key
         self.serializer = serializer
 

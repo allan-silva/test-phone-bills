@@ -18,6 +18,6 @@ def create_app():
     app = create_app_with_swagger()
     configure_log(app, __name__)
     register_transaction_request_generator(app)
-    configure_producer(app, 'info', 'phone-calls.dx', 'get-info')
-    configure_producer(app, 'call_event', 'phone-calls.dx', 'call-event')
+    configure_producer(app, 'info', 'call-event.tx', 'get-info')
+    configure_producer(app, 'call_event', 'call-event.tx', 'call-event')
     return app

@@ -1,6 +1,6 @@
 import os
 
-from kombu import Connection, Queue
+from kombu import Connection, Exchange, Queue
 from kombu.mixins import ConsumerMixin
 
 
@@ -9,10 +9,16 @@ CONNECTION = Connection(RABBIT_URL)
 
 
 class QueueHandler:
-    def __init__(self, queue_name, on_message_callback, content_type='application/json'):
-        self.queue = Queue(queue_name)
+    def __init__(self, exchange_name, routing_key, on_message_callback, content_type='application/json'):
+        exchange = self.declare_exchange(exchange_name)
+        self.queue = Queue(exchange=exchange, routing_key=routing_key, auto_delete=True)
         self.on_message_callback = on_message_callback
         self.content_type = content_type
+
+    def declare_exchange(self, exchange_name):
+        exchange = Exchange(exchange_name, channel=CONNECTION.channel(), durable=True, type='topic')
+        exchange.declare()
+        return exchange
 
     def on_message(self, body, message):
         self.on_message_callback(body, message)
