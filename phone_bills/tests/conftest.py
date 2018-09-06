@@ -1,12 +1,16 @@
+import os
 import pytest
-# from billingcommon.db import BillingDb
+from tempfile import mkstemp
+from phone_bills.billingcommon.db import BillingDb
 
 
-# @pytest.fixture
-# def dbo():
-#     db = BillingDb('sqlite://')
-#     db.metadata.create_all()
-#     return db
+@pytest.fixture(scope='module')
+def dbo(request):
+    db = BillingDb('sqlite:///:memory:')
+    db.metadata.create_all()
+    if request.param:
+        request.param(db)
+    return db
 
 
 @pytest.fixture
