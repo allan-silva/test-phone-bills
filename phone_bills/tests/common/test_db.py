@@ -1,4 +1,5 @@
 import pytest
+
 from datetime import datetime, time
 from sqlalchemy.sql.expression import null
 

@@ -6,11 +6,15 @@ from phone_bills.billingcommon.db import BillingDb
 
 @pytest.fixture(scope='module')
 def dbo(request):
-    db = BillingDb('sqlite:///:memory:')
+    handle, path = mkstemp()
+    db = BillingDb(f'sqlite:///{path}')
     db.metadata.create_all()
-    if request.param:
+    if hasattr(request, 'param') and request.param:
         request.param(db)
-    return db
+    yield db
+    os.close(handle)
+    os.remove(path)
+
 
 
 @pytest.fixture
