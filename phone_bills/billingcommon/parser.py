@@ -28,6 +28,11 @@ class CallRecordParser:
             call_event['destination'] = d_phone
         ts = call_record['timestamp']
         if isinstance(ts, str):
-            call_event['timestamp'] = datetime.strptime(
-                ts, '%Y-%m-%dT%H:%M:%SZ')
+            try:
+                call_event['timestamp'] = datetime.strptime(
+                    ts, '%Y-%m-%dT%H:%M:%SZ')
+            except Exception:
+                call_event['timestamp'] = datetime.strptime(
+                    ts, '%Y-%m-%dT%H:%M:%S.%fZ')
+
         return call_event

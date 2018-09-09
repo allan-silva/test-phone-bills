@@ -125,7 +125,8 @@ class CallRecordTable(BillingTable):
             Column('applied_tariff_config',
                     IntegerType,
                     ForeignKey(tariff_config_table.id),
-                    nullable=True))
+                    nullable=True),
+            Column('transaction_id', String))
         super().__init__(db, table)
 
     def insert(self, **values):

@@ -14,6 +14,7 @@ class PhoneCallService:
         self.log.info(f'Call Record received\nTransaction: {transaction_id}\nRecord: {call_record}')
         try:
             call_record = self.parser.parse(call_record)
+            call_record['transaction_id'] = transaction_id
             if call_record['type'] == 'start':
                 config = self.price_engine.get_tariff_config(call_record)
                 call_record['applied_tariff_config'] = config['config_id']

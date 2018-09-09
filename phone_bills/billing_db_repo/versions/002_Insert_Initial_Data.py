@@ -15,10 +15,10 @@ def get_insert_configs():
     for area_code_source in area_codes:
         for area_code_dest in area_codes:
             yield f"""insert into tariff_configuration(
-                        created_date, config_start_date, conditions_id,
-                        standard_charge, call_time_charge)
+                        created_date, config_start_date, config_end_date,
+                        conditions_id, standard_charge, call_time_charge)
                       select
-                        now(), now(), c.id, '0.36', '0.09'
+                        now(), '2010-01-01', '2050-01-01', c.id, '0.36', '0.09'
                       from tariff_conditions c
                       where
                         c.start_at = '06:00:00'
@@ -27,10 +27,10 @@ def get_insert_configs():
                         and
                         c.destination_area_code = '{area_code_dest}';"""
             yield f"""insert into tariff_configuration(
-                        created_date, config_start_date, conditions_id,
-                        standard_charge, call_time_charge)
+                        created_date, config_start_date, config_end_date,
+                        conditions_id, standard_charge, call_time_charge)
                       select
-                        now(), now(), c.id, '0.36', '0.0'
+                        now(), '2010-01-01', '2050-01-01', c.id, '0.36', '0.0'
                       from tariff_conditions c
                       where
                         c.start_at = '22:00:00'
