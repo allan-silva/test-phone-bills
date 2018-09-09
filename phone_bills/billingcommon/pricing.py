@@ -11,7 +11,7 @@ class PriceEngine:
         print(time, config['start_at'], config['end_at'])
         return is_time_between(time, config['start_at'], config['end_at'])
 
-    def get_current_tariff_config(self, call_record):
+    def get_tariff_config(self, call_record):
         if call_record['type'] != 'start':
             raise ValueError('Call start record is expected.')
         timestamp = call_record['timestamp']

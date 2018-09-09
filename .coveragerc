@@ -1,6 +1,11 @@
 [run]
 branch = True
 include = phone_bills/*
+omit=
+    phone_bills/tests/*
+    phone_bills/billing_db_repo/*
+    phone_bills/billingapi/wsgi.py
 
 [report]
 show_missing = True
+

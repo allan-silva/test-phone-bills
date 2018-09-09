@@ -1,5 +1,6 @@
 # Based on: https://github.com/mozilla/balrog/blob/v2.53/auslib/db.py
 
+from datetime import datetime
 from sqlalchemy import (
     between, create_engine, Column, DateTime, Integer, BigInteger,
     DECIMAL, ForeignKey, join, MetaData, null, select, String, Table, Time)
@@ -126,6 +127,10 @@ class CallRecordTable(BillingTable):
                     ForeignKey(tariff_config_table.id),
                     nullable=True))
         super().__init__(db, table)
+
+    def insert(self, **values):
+        values['created_date'] = datetime.now()
+        super().insert(**values)
 
 
 class BillingDb(object):

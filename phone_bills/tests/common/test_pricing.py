@@ -45,19 +45,19 @@ def insert_data(dbo):
 def test_get_config(dbo, call_record):
     price_engine = PriceEngine(dbo)
     call_record['timestamp'] = datetime(2018, 8, 7, 22)
-    config = price_engine.get_current_tariff_config(call_record)
+    config = price_engine.get_tariff_config(call_record)
     assert config['config_id'] == CONFIG_ID_DT_RANGE_1
 
     call_record['timestamp'] = datetime(2018, 8, 13, 3)
-    config = price_engine.get_current_tariff_config(call_record)
+    config = price_engine.get_tariff_config(call_record)
     assert config['config_id'] == CONFIG_ID_DT_RANGE_1
 
     call_record['timestamp'] = datetime(2018, 8, 15, 5, 59, 59)
-    config = price_engine.get_current_tariff_config(call_record)
+    config = price_engine.get_tariff_config(call_record)
     assert config['config_id'] == CONFIG_ID_DT_RANGE_1
 
     call_record['timestamp'] = datetime(2018, 8, 15, 22)
-    config = price_engine.get_current_tariff_config(call_record)
+    config = price_engine.get_tariff_config(call_record)
     assert config['config_id'] == CONFIG_ID_DT_RANGE_2
 
 
@@ -69,7 +69,7 @@ def test_no_config_error_not_fall_in_range(dbo, call_record):
                       'is_config_applicable',
                       wraps=lambda t, c: is_time_between(t, c['start_at'], c['end_at'])) as mock:
         with pytest.raises(RuntimeError):
-            price_engine.get_current_tariff_config(call_record)
+            price_engine.get_tariff_config(call_record)
         assert mock.call_count == 1
 
 
@@ -81,11 +81,11 @@ def test_no_config_error_no_config_exists(dbo, call_record):
                       'is_config_applicable',
                       wraps=lambda t, c: is_time_between(t, c['start_at'], c['end_at'])) as mock:
         with pytest.raises(RuntimeError):
-            price_engine.get_current_tariff_config(call_record)
+            price_engine.get_tariff_config(call_record)
         assert mock.call_count == 0
 
 
 def test_apply_tariff_config_error():
     price_engine = PriceEngine(None)
     with pytest.raises(ValueError):
-        price_engine.get_current_tariff_config({'type': 'end'})
+        price_engine.get_tariff_config({'type': 'end'})
