@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy import (
     between, create_engine, Column, DateTime, Integer, BigInteger,
     DECIMAL, ForeignKey, join, MetaData, null, select, String, Table, Time)
+from sqlalchemy.orm import aliased
 
 
 class BillingTable(object):
@@ -132,6 +133,31 @@ class CallRecordTable(BillingTable):
     def insert(self, **values):
         values['created_date'] = datetime.now()
         super().insert(**values)
+
+    def calls_for_pricing(self, area_code, phone_number, start_date, end_date):
+        call_start_t = aliased(self.t)
+        call_end_t = aliased(self.t)
+        query_join = join(
+            call_start_t,
+            self.db.tariff_config.t)
+        query_join = query_join.join(
+            call_end_t,
+            call_start_t.c.call_id == call_end_t.c.call_id)
+        columns = [
+            call_start_t.c.destination_area_code.label('area_code'),
+            call_start_t.c.destination.label('phone'),
+            call_start_t.c.timestamp.label('start_at'),
+            call_end_t.c.timestamp.label('end_at'),
+            self.db.tariff_config.standard_charge,
+            self.db.tariff_config.call_time_charge
+        ]
+        query = select(columns).select_from(query_join)
+        query = query.where(call_start_t.c.id != call_end_t.c.id)
+        query = query.where(call_start_t.c.source_area_code == area_code)
+        query = query.where(call_start_t.c.source == phone_number)
+        query = query.where(between(call_end_t.c.timestamp, start_date, end_date))
+        result = self.connection.execute(query).fetchall()
+        return self.to_dict(result)
 
 
 class BillingDb(object):

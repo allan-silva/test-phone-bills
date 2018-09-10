@@ -89,3 +89,60 @@ def test_apply_tariff_config_error():
     price_engine = PriceEngine(None)
     with pytest.raises(ValueError):
         price_engine.get_tariff_config({'type': 'end'})
+
+
+def insert_bill_call_data(dbo):
+    tariff_condition_1 = dbo.tariff_condition.insert(
+        source_area_code='99',
+        destination_area_code='99',
+        start_at=time(hour=22),
+        end_at=time(hour=21, minute=59, second=59))
+    tariff_config_1 = dbo.tariff_config.insert(
+        created_date=datetime.now(),
+        config_start_date=datetime(2015, 1, 1),
+        config_end_date=datetime(2015, 1, 31, 23, 59, 59),
+        conditions_id=tariff_condition_1['id'],
+        standard_charge=0.36,
+        call_time_charge=0.09)
+    dbo.call_record.insert(
+        created_date=datetime.now(),
+        external_id=123,
+        call_id=43,
+        type='start',
+        source_area_code='99',
+        source='988526423',
+        destination_area_code='99',
+        destination='93468278',
+        timestamp=datetime(2014, 12, 31, 23, 57, 13),
+        applied_tariff_config=tariff_config_1['id'])
+    dbo.call_record.insert(
+        created_date=datetime.now(),
+        external_id=124,
+        call_id=43,
+        type='end',
+        timestamp=datetime(2015, 1, 1, 0))
+    dbo.call_record.insert(
+        created_date=datetime.now(),
+        external_id=321,
+        call_id=44,
+        type='start',
+        source_area_code='99',
+        source='988526423',
+        destination_area_code='99',
+        destination='93468278',
+        timestamp=datetime(2015, 1, 31, 22),
+        applied_tariff_config=tariff_config_1['id'])
+    dbo.call_record.insert(
+        created_date=datetime.now(),
+        external_id=421,
+        call_id=44,
+        type='end',
+        timestamp=datetime(2015, 2, 1))
+
+
+@pytest.mark.parametrize('dbo', [insert_data], indirect=['dbo'])
+def test_get_bill_calls(dbo):
+    insert_bill_call_data(dbo)
+    price_engine = PriceEngine(dbo)
+    bill_calls = list(price_engine.get_bill_calls('99', '988526423', 1, 2015))
+    assert len(bill_calls) == 1
