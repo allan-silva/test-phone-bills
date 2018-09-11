@@ -146,3 +146,9 @@ def test_get_bill_calls(dbo):
     price_engine = PriceEngine(dbo)
     bill_calls = list(price_engine.get_bill_calls('99', '988526423', 1, 2015))
     assert len(bill_calls) == 1
+    bill_call = bill_calls[0]
+    dt = datetime(2014, 12, 31, 23, 57, 13)
+    assert bill_call['destination'] == '9993468278'
+    assert bill_call['call_start_date'] == dt.date()
+    assert bill_call['call_start_time'] == dt.time()
+    assert bill_call['call_duration'] == time(0, 2, 47)

@@ -32,10 +32,10 @@ class PriceEngine:
         time_charge = call_time * bill_call['call_time_charge']
         return bill_call['standard_charge'] + time_charge
 
-    def get_formatted_call_duration(self, bill_call):
+    def get_call_time(self, bill_call):
         call_time = bill_call['end_at'] - bill_call['start_at']
         call_duration = datetime.combine(datetime.today(), time()) + call_time
-        return call_duration.strftime('%Hh%Mm%Ss')
+        return call_duration.time()
 
     def get_bill_calls(self, area_code, phone_number, ref_month, ref_year):
         start_date = datetime(ref_year, ref_month, 1)
@@ -46,5 +46,5 @@ class PriceEngine:
             yield dict(destination=f"{bill_call['area_code']}{bill_call['phone']}",
                        call_start_date=bill_call['start_at'].date(),
                        call_start_time=bill_call['start_at'].time(),
-                       call_duration=self.get_formatted_call_duration(bill_call),
+                       call_duration=self.get_call_time(bill_call),
                        call_price=self.get_call_charge(bill_call))
