@@ -26,6 +26,7 @@ paths:
       responses:
         '200':
           description: Server Information
+
   /call:
     post:
       description: Receives a call event.
@@ -43,9 +44,38 @@ paths:
         '202':
           description: Call record response.
           schema:
-            $ref: '#/definitions/CallRecordResponseModel'
+            $ref: '#/definitions/TransactionIdResponseModel'
         '404':
           description: Invalid Call Start request.
+        '500':
+          description: Internal Server Error.
+
+  /bill/{subscriber}/close:
+    post:
+      description: Close bill for period.
+      operationId: phone_bills.billingapi.billing.bill_close
+      produces:
+        - application/json
+      parameters:
+        - name: ref_period
+          in: body
+          description: Reference period.
+          required: true
+          schema:
+            $ref: '#/definitions/RefPeriodModel'
+        - name: subscriber
+          in: path
+          description: Subscriber number.
+          required: true
+          type: string
+          format: phone-number
+      responses:
+        '202':
+          description: Request for close bill accepted and queued for processing.
+          schema:
+            $ref: '#/definitions/TransactionIdResponseModel'
+        '404':
+          description: Invalid request.
         '500':
           description: Internal Server Error.
 
@@ -85,7 +115,7 @@ definitions:
         type: string
         format: phone-number
 
-  CallRecordResponseModel:
+  TransactionIdResponseModel:
     description: Call record response.
     type: object
     required:
@@ -94,3 +124,19 @@ definitions:
       transaction_id:
         description: Request transaction id
         type: string
+
+  RefPeriodModel:
+    description: Reference period for close the bill.
+    type: object
+    required:
+      - month
+      - year
+    properties:
+      month:
+        description: Reference month.
+        type: integer
+        format: int32
+      year:
+        description: Reference year.
+        type: integer
+        format: int32
