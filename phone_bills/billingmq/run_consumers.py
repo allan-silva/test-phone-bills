@@ -21,6 +21,7 @@ def on_message(body, message):
 def run():
     queue_handlers = [
         QueueHandler('call-event.tx', 'call-event', message_dispatcher.phone_call),
+        QueueHandler('bill-event.tx', 'bill-close', message_dispatcher.bill_close),
         QueueHandler('call-event.tx', 'get-info', on_message)
     ]
     BillingConsumers(queue_handlers).run()

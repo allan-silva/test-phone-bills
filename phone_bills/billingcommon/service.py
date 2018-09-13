@@ -8,10 +8,10 @@ class PhoneCallService:
         self.db = db
         self.parser = CallRecordParser()
         self.price_engine = PriceEngine(self.db)
-        configure_log(self, __name__)
+        configure_log(self, PhoneCallService.__name__)
 
     def save(self, transaction_id, call_record):
-        self.log.info(f'Call Record received\nTransaction: {transaction_id}\nRecord: {call_record}')
+        self.log.info(f'Call Record received - {transaction_id} - Record: {call_record}')
         try:
             call_record = self.parser.parse(call_record)
             call_record['transaction_id'] = transaction_id
@@ -23,3 +23,13 @@ class PhoneCallService:
             self.log.exception('Error inserting call record')
             raise
 
+
+class BillingService:
+    def __init__(self, db, doc_db):
+        self.db = db
+        self.doc_db = doc_db
+        self.price_engine = PriceEngine(self.db)
+        configure_log(self, BillingService.__name__)
+
+    def close_bill(self, transaction_id, close_request):
+        self.log.info(f'Bill close requested: {transaction_id} - {close_request}')

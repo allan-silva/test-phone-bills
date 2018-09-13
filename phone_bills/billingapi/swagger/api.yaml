@@ -136,7 +136,10 @@ definitions:
         description: Reference month.
         type: integer
         format: int32
+        minimum: 1
+        maximum: 12
       year:
         description: Reference year.
         type: integer
         format: int32
+        minimum: 1877

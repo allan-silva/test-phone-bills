@@ -26,5 +26,6 @@ def call_event(call_record, transaction):
 
 @with_transaction
 def bill_close(subscriber, ref_period, transaction):
-    app.log.info(f"{subscriber} - {ref_period} - {transaction}")
+    close_request = dict(subscriber=subscriber, ref=ref_period)
+    app.amqp.bill_event.publish(close_request, headers=transaction)
     return transaction, 202

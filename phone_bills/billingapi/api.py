@@ -20,4 +20,5 @@ def create_app():
     register_transaction_request_generator(app)
     configure_producer(app, 'info', 'call-event.tx', 'get-info')
     configure_producer(app, 'call_event', 'call-event.tx', 'call-event')
+    configure_producer(app, 'bill_event', 'bill-event.tx', 'bill-close')
     return app
