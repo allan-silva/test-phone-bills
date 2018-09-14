@@ -1,6 +1,7 @@
 from phone_bills.billingcommon.parser import CallRecordParser
 from phone_bills.billingcommon.pricing import PriceEngine
 from phone_bills.billingcommon.logging import configure_log
+from phone_bills.billingcommon.util import extract_phone_number
 
 
 class PhoneCallService:
@@ -33,3 +34,15 @@ class BillingService:
 
     def close_bill(self, transaction_id, close_request):
         self.log.info(f'Bill close requested: {transaction_id} - {close_request}')
+        area_code, phone = extract_phone_number(close_request['subscriber'])
+        month, year = int(close_request['month']), int(close_request['year'])
+        calls = []
+        for bill_call in self.price_engine.get_bill_calls(area_code, phone, month, year):
+            calls.append(bill_call)
+        bill_entry = self.doc_db.create_bill_entry(
+            close_request['subscriber'],
+            month,
+            year,
+            calls,
+            transaction_id)
+        self.doc_db.insert_bill(bill_entry)
