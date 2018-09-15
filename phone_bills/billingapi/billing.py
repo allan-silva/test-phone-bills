@@ -2,7 +2,11 @@ from connexion import request, problem
 from flask import current_app as app
 
 from phone_bills.billingapi.transaction import with_transaction
+from phone_bills.billingapi.parser import BillResponseParser
 from phone_bills.billingapi.validation import validate_call_record
+
+
+bill_parser = BillResponseParser()
 
 
 @with_transaction
@@ -29,3 +33,14 @@ def bill_close(subscriber, ref_period, transaction):
     close_request = dict(subscriber=subscriber, ref=ref_period)
     app.amqp.bill_event.publish(close_request, headers=transaction)
     return transaction, 202
+
+
+def get_bill(subscriber, month, year):
+    try:
+        bill = app.docdb.get_bill(subscriber, month, year)
+        if bill:
+            return bill_parser.parse(bill), 200
+        return problem(404, 'Not found', 'Phone Bill not found.')
+    except Exception:
+        app.log.exception('Error requesting phone bill.')
+        raise

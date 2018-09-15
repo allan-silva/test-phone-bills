@@ -45,7 +45,7 @@ paths:
           description: Call record response.
           schema:
             $ref: '#/definitions/TransactionIdResponseModel'
-        '404':
+        '400':
           description: Invalid Call Start request.
         '500':
           description: Internal Server Error.
@@ -74,8 +74,46 @@ paths:
           description: Request for close bill accepted and queued for processing.
           schema:
             $ref: '#/definitions/TransactionIdResponseModel'
-        '404':
+        '400':
           description: Invalid request.
+        '500':
+          description: Internal Server Error.
+
+  /bill/{subscriber}:
+    get:
+      description: Gets a closed phone bill.
+      operationId: phone_bills.billingapi.billing.get_bill
+      produces:
+        - application/json
+      parameters:
+        - name: subscriber
+          in: path
+          description: Subscriber number.
+          required: true
+          type: string
+          format: phone-number
+        - name: month
+          in: query
+          required: false
+          description: Reference month.
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 12
+        - name: year
+          in: query
+          description: Reference year.
+          required: false
+          type: integer
+          format: int32
+          minimum: 1877
+      responses:
+        '200':
+          description: Requested phone bill for the given month/year.
+          schema:
+            $ref: "#/definitions/BillResponseModel"
+        '404':
+          description: Requested phone bill not found.
         '500':
           description: Internal Server Error.
 
@@ -143,3 +181,37 @@ definitions:
         type: integer
         format: int32
         minimum: 1877
+
+  BillResponseModel:
+    description: Phone bill
+    type: object
+    properties:
+      subscriber:
+        description: Phone subscriber.
+        type: string
+      period:
+        description: Reference period.
+        type: string
+      calls:
+        description: Bill calls.
+        type: array
+        items:
+          type: object
+          properties:
+            destination:
+              description: Destination phone number
+              type: string
+              format: phone-number
+            start_date:
+              description: Call start date.
+              type: string
+            start_time:
+              description: Call start time.
+              type: string
+            duration:
+              description: Call duration
+              type: string
+            price:
+              description: Call price.
+              type: number
+              format: float

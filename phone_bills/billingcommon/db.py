@@ -82,8 +82,8 @@ class TariffConfigurationTable(BillingTable):
                     IntegerType,
                     ForeignKey(tariff_conditions_table.id),
                     nullable=False),
-            Column('standard_charge', DECIMAL(8, 3), nullable=False),
-            Column('call_time_charge', DECIMAL(8, 3), nullable=False))
+            Column('standard_charge', DECIMAL(8, 3, asdecimal=False), nullable=False),
+            Column('call_time_charge', DECIMAL(8, 3, asdecimal=False), nullable=False))
         super().__init__(db, table)
 
     def get_current_configs(self, source_area_code, dest_area_code, timestamp):

@@ -32,12 +32,17 @@ class BillingService:
         self.price_engine = PriceEngine(self.db)
         configure_log(self, BillingService.__name__)
 
+    def create_call_duration(self, bill_call):
+        duration = bill_call['duration']
+        return dict(h=duration.hour, m=duration.minute, s=duration.second)
+
     def close_bill(self, transaction_id, close_request):
         self.log.info(f'Bill close requested: {transaction_id} - {close_request}')
         area_code, phone = extract_phone_number(close_request['subscriber'])
-        month, year = int(close_request['month']), int(close_request['year'])
+        month, year = int(close_request['ref']['month']), int(close_request['ref']['year'])
         calls = []
         for bill_call in self.price_engine.get_bill_calls(area_code, phone, month, year):
+            bill_call['duration'] = self.create_call_duration(bill_call)
             calls.append(bill_call)
         bill_entry = self.doc_db.create_bill_entry(
             close_request['subscriber'],

@@ -1,6 +1,7 @@
 import pytest
 import uuid
 
+from datetime import datetime
 from unittest.mock import patch, MagicMock
 from phone_bills.billingapi.api import create_app
 from phone_bills.billingmq.producer import BillingAPIProducer
@@ -11,8 +12,9 @@ TEST_TRANSACTION = uuid.UUID('16fd2706-8baf-433b-82eb-8c7fada84742')
 
 @pytest.fixture
 def client():
-    app = create_app()
-    return app.test_client()
+    with patch('phone_bills.billingcommon.docdb.BillingDocDb'):
+        app = create_app()
+        yield app.test_client()
 
 
 @pytest.fixture
@@ -103,6 +105,7 @@ def remove_field(field):
         return field
     return f
 
+
 @pytest.mark.parametrize('remove_field_fn', [
         remove_field('id'),
         remove_field('type'),
@@ -117,3 +120,59 @@ def test_post_call_record_with_no_required_fields(client, call_end_record, remov
         response_error = response.get_json()
         assert field_removed in response_error['detail']
         assert not amqp_mock.called
+
+
+@patch('uuid.uuid4', MagicMock(return_value=TEST_TRANSACTION))
+def test_bill_close(client):
+    with patch.object(BillingAPIProducer, 'publish') as amqp_mock:
+        ref_period = dict(month=4, year=2018)
+        response = client.post('/v1/bill/1129222929/close', json=ref_period)
+        assert response.status_code == 202
+        transaction = response.get_json()
+        assert transaction['transaction_id'] == str(TEST_TRANSACTION)
+        assert amqp_mock.call_count == 1
+
+
+def test_bill_close_month_validation(client):
+    ref_period = dict(month=13, year=2018)
+    response = client.post('/v1/bill/1129222929/close', json=ref_period)
+    assert response.status_code == 400
+
+
+def test_get_phone_bill():
+    def se(subscriber, month, year):
+        _id = dict(subscriber=subscriber, month=month, year=year)
+        duration = dict(h=1, m=52, s=35)
+        call = dict(
+            destination='11282282829',
+            duration=duration,
+            price=0.42,
+            start_at = datetime(2018, 1, 1, 21, 42, 21))
+        return dict(_id=_id, calls=[call])
+    with patch('phone_bills.billingcommon.docdb.BillingDocDb') as m:
+        m().get_bill.side_effect = se
+        app = create_app()
+        test_client = app.test_client()
+        qs = dict(month=4, year=2017)
+        response = test_client.get('/v1/bill/11282282828', query_string=qs)
+        assert response.status_code == 200
+        bill_response = response.get_json()
+        assert bill_response['subscriber'] == '11282282828'
+        assert bill_response['period'] == '4/2017'
+        assert len(bill_response['calls']) == 1
+        call = bill_response['calls'][0]
+        assert call['duration'] == '1h52m35s'
+        assert call['destination'] == '11282282829'
+        assert call['start_date'] == '01/01/2018'
+        assert call['start_time'] == '21:42:21'
+        assert call['price'] == 0.42
+
+
+def test_get_phone_bill_not_found():
+    with patch('phone_bills.billingcommon.docdb.BillingDocDb') as m:
+        m().get_bill.return_value = None
+        app = create_app()
+        test_client = app.test_client()
+        qs = dict(month=4, year=2017)
+        response = test_client.get('/v1/bill/11282282828', query_string=qs)
+        assert response.status_code == 404

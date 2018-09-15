@@ -26,15 +26,6 @@ class BillingDocDb:
         return dict(_id=id, calls=bill_calls, transaction_id=transaction_id)
 
 
-def configure_producer(app, name, exchange, routing_key, serializer='json'):
-    if not hasattr(app, 'amqp'):
-        app.amqp = AmqpExtension()
-    app.amqp.add_producer(name, exchange, routing_key, serializer)
-
-
-if __name__ == '__main__':
-    from datetime import time
-    doc_db = BillingDocDb()
-    entry = doc_db.create_bill_entry('11989889898', 10, 2015, [time(11,0)], 'we')
-    doc_db.insert_bill(entry)
-    print(doc_db.get_bill('11989889898', 10, 2015))
+def configure_docdb(app):
+    if not hasattr(app, 'docdb'):
+        app.docdb = BillingDocDb()
