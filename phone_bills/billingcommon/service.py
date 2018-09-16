@@ -11,15 +11,44 @@ class PhoneCallService:
         self.price_engine = PriceEngine(self.db)
         configure_log(self, PhoneCallService.__name__)
 
+    def get_related_call_record(self, call_record):
+        where = [
+            self.db.call_record.call_id == call_record['call_id'],
+            self.db.call_record.type != call_record['type']
+        ]
+        records = self.db.call_record.select(where=where)
+        return records[0] if records else None
+
+    def get_configs(self, call_start_record, call_end_record):
+        configs = self.price_engine.get_tariff_configs(
+            call_start_record['timestamp'],
+            call_end_record['timestamp'],
+            call_start_record['source_area_code'],
+            call_start_record['destination_area_code'])
+        return configs
+
+    def save_config(self, call_record):
+        related_call_record = self.get_related_call_record(call_record)
+        if related_call_record:
+            if call_record['type'] == 'start':
+                call_start_record = call_record
+                call_end_record = related_call_record
+            else:
+                call_start_record = related_call_record
+                call_end_record = call_record
+            configs = self.get_configs(call_start_record, call_end_record)
+            for config in configs:
+                config['call_id'] = call_start_record['id']
+                self.db.applied_config.insert(**config)
+
     def save(self, transaction_id, call_record):
         self.log.info(f'Call Record received - {transaction_id} - Record: {call_record}')
         try:
             call_record = self.parser.parse(call_record)
             call_record['transaction_id'] = transaction_id
-            if call_record['type'] == 'start':
-                config = self.price_engine.get_tariff_config(call_record)
-                call_record['applied_tariff_config'] = config['config_id']
-            self.db.call_record.insert(**call_record)
+            ret = self.db.call_record.insert(call_record)
+            call_record['id'] = ret['id']
+            self.save_config(call_record)
         except Exception:
             self.log.exception('Error inserting call record')
             raise

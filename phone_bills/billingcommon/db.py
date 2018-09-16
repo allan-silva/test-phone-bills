@@ -90,7 +90,9 @@ class TariffConfigurationTable(BillingTable):
         cfg_con_join = join(self.t, self.db.tariff_condition.t,
                  self.conditions_id == self.db.tariff_condition.id)
         columns = [
-            self.id, self.db.tariff_condition.id,
+            self.id, self.standard_charge,
+            self.call_time_charge,
+            self.db.tariff_condition.id,
             self.db.tariff_condition.start_at,
             self.db.tariff_condition.end_at]
         query = select(columns).select_from(cfg_con_join)
@@ -99,13 +101,38 @@ class TariffConfigurationTable(BillingTable):
         query = query.where(self.db.tariff_condition.destination_area_code == dest_area_code)
         configs = self.connection.execute(query).fetchall()
         configs = [{'config_id': config_id,
+                    'standard_charge': standard_charge,
+                    'call_time_charge': call_time_charge,
                     'condition_id': condition_id,
                     'start_at': start_at,
                     'end_at': end_at} for config_id,
+                                          standard_charge,
+                                          call_time_charge,
                                           condition_id,
                                           start_at,
                                           end_at in configs]
         return configs
+
+
+class AppliedConfigTable(BillingTable):
+    def __init__(self, db, metadata, IntegerType, call_records_table, tariff_conditions_table):
+        table = Table(
+            'applied_config',
+            metadata,
+            Column('call_id',
+                    IntegerType,
+                    ForeignKey(call_records_table.id),
+                    primary_key=True),
+            Column('config_id',
+                   IntegerType,
+                   ForeignKey(tariff_conditions_table.id),
+                   primary_key=True),
+            Column('start_time', Time, nullable=False),
+            Column('end_time', Time, nullable=False),
+            Column('standard_charge', DECIMAL(8, 3, asdecimal=False), nullable=False),
+            Column('call_time_charge', DECIMAL(8, 3, asdecimal=False), nullable=False),
+            Column('order', Integer, nullable=False))
+        super().__init__(db, table)
 
 
 class CallRecordTable(BillingTable):
@@ -123,16 +150,13 @@ class CallRecordTable(BillingTable):
             Column('destination_area_code', String, nullable=True),
             Column('destination', String, nullable=True),
             Column('timestamp', DateTime, nullable=False),
-            Column('applied_tariff_config',
-                    IntegerType,
-                    ForeignKey(tariff_config_table.id),
-                    nullable=True),
             Column('transaction_id', String))
         super().__init__(db, table)
 
-    def insert(self, **values):
-        values['created_date'] = datetime.now()
-        super().insert(**values)
+    def insert(self, call_record):
+        call_record['created_date'] = datetime.now()
+        return super().insert(**call_record)
+
 
     def calls_for_pricing(self, area_code, phone_number, start_date, end_date):
         call_start_t = aliased(self.t)
@@ -174,6 +198,7 @@ class BillingDb(object):
         self.tariff_conditions_table = TariffConditionsTable(self, self.metadata, int_type)
         self.tariff_config_table = TariffConfigurationTable(self, self.metadata, int_type, self.tariff_conditions_table)
         self.call_record_table = CallRecordTable(self, self.metadata, int_type, self.tariff_config_table)
+        self.applied_config_table = AppliedConfigTable(self, self.metadata, int_type, self.call_record_table, self.tariff_config_table)
 
     @property
     def tariff_condition(self):
@@ -186,6 +211,10 @@ class BillingDb(object):
     @property
     def call_record(self):
         return self.call_record_table
+
+    @property
+    def applied_config(self):
+        return self.applied_config_table
 
 
 def create_db(uri):

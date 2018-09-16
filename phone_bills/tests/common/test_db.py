@@ -29,22 +29,23 @@ def insert_data(dbo):
         standard_charge=0.36,
         call_time_charge=0.09)
     call_start = dbo.call_record.insert(
-        created_date=datetime.now(),
-        external_id=42,
-        call_id=42,
-        type='start',
-        source_area_code='11',
-        source='989889898',
-        destination_area_code='11',
-        destination='27227272',
-        timestamp=datetime.now(),
-        applied_tariff_config=tariff_config_1['id'])
+        dict(
+            created_date=datetime.now(),
+            external_id=42,
+            call_id=42,
+            type='start',
+            source_area_code='11',
+            source='989889898',
+            destination_area_code='11',
+            destination='27227272',
+            timestamp=datetime.now()))
     call_end = dbo.call_record.insert(
-        created_date=datetime.now(),
-        external_id=4242,
-        call_id=42,
-        type='end',
-        timestamp=datetime.now())
+        dict(
+            created_date=datetime.now(),
+            external_id=4242,
+            call_id=42,
+            type='end',
+            timestamp=datetime.now()))
 
 
 @pytest.mark.parametrize('dbo', [insert_data], indirect=['dbo'])
@@ -99,7 +100,6 @@ def test_call_records(dbo):
     assert 'destination_area_code' in call_record
     assert 'destination' in call_record
     assert 'timestamp' in call_record
-    assert 'applied_tariff_config' in call_record
     call_events = dbo.call_record.select(where=[dbo.call_record.call_id == 42])
     assert any([c for c in call_events if c['type'] == 'start'])
     assert any([c for c in call_events if c['type'] == 'end'])

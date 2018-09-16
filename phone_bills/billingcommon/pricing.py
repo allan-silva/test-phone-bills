@@ -4,7 +4,7 @@ from datetime import datetime, time
 # This is a external package, but I'm the author
 # https://github.com/MicroarrayTecnologia/py-time-between
 from timebetween import is_time_between
-from phone_bills.billingcommon.util import call_duration
+from phone_bills.billingcommon.util import call_duration, time_add
 
 
 class PriceEngine:
@@ -14,18 +14,42 @@ class PriceEngine:
     def is_config_applicable(self, time, config):
         return is_time_between(time, config['start_at'], config['end_at'])
 
-    def get_tariff_config(self, call_record):
-        if call_record['type'] != 'start':
-            raise ValueError('Call start record is expected.')
-        timestamp = call_record['timestamp']
+    def get_tariff_configs(self, start_at, end_at, source_area_code, dest_area_code):
+        applied_configs = []
+        start_time = start_at.time()
+        end_time = end_at.time()
         configs = self.db.tariff_config.get_current_configs(
-            call_record['source_area_code'],
-            call_record['destination_area_code'],
-            timestamp)
-        for config in configs:
-            if self.is_config_applicable(timestamp.time(), config):
-                return config
-        raise RuntimeError('No tariff config for call record.')
+            source_area_code, dest_area_code, start_at)
+
+        def get_config(t):
+            for c in configs:
+                if self.is_config_applicable(t, c):
+                    return c
+            return None
+
+        config_order = 0
+        config = get_config(start_time)
+
+        while config:
+            config_order += 1
+            applied_config = dict(
+                config_id=config['config_id'],
+                start_time=start_time,
+                standard_charge=config['standard_charge'],
+                call_time_charge=config['call_time_charge'],
+                order=config_order)
+            if self.is_config_applicable(end_time, config):
+                applied_config['end_time'] = end_time
+                applied_configs.append(applied_config)
+                break
+            else:
+                applied_config['end_time'] = config['end_at']
+                start_time = time_add(config['end_at'], s=1)
+                applied_configs.append(applied_config)
+            config = get_config(start_time)
+
+        return applied_configs
+
 
     def get_call_charge(self, bill_call):
         call_time = call_duration(bill_call['start_at'], bill_call['end_at'])
