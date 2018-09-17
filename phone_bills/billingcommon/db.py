@@ -127,11 +127,11 @@ class AppliedConfigTable(BillingTable):
                    IntegerType,
                    ForeignKey(tariff_conditions_table.id),
                    primary_key=True),
-            Column('start_time', Time, nullable=False),
-            Column('end_time', Time, nullable=False),
+            Column('order', Integer, nullable=False, primary_key=True),
+            Column('start_at', DateTime, nullable=False),
+            Column('end_at', DateTime, nullable=False),
             Column('standard_charge', DECIMAL(8, 3, asdecimal=False), nullable=False),
-            Column('call_time_charge', DECIMAL(8, 3, asdecimal=False), nullable=False),
-            Column('order', Integer, nullable=False))
+            Column('call_time_charge', DECIMAL(8, 3, asdecimal=False), nullable=False))
         super().__init__(db, table)
 
 
@@ -157,23 +157,18 @@ class CallRecordTable(BillingTable):
         call_record['created_date'] = datetime.now()
         return super().insert(**call_record)
 
-
     def calls_for_pricing(self, area_code, phone_number, start_date, end_date):
         call_start_t = aliased(self.t)
         call_end_t = aliased(self.t)
         query_join = join(
-            call_start_t,
-            self.db.tariff_config.t)
-        query_join = query_join.join(
-            call_end_t,
+            call_start_t, call_end_t,
             call_start_t.c.call_id == call_end_t.c.call_id)
         columns = [
+            call_start_t.c.id.label('call_start_id'),
             call_start_t.c.destination_area_code.label('area_code'),
             call_start_t.c.destination.label('phone'),
             call_start_t.c.timestamp.label('start_at'),
-            call_end_t.c.timestamp.label('end_at'),
-            self.db.tariff_config.standard_charge,
-            self.db.tariff_config.call_time_charge
+            call_end_t.c.timestamp.label('end_at')
         ]
         query = select(columns).select_from(query_join)
         query = query.where(call_start_t.c.id != call_end_t.c.id)
@@ -181,7 +176,14 @@ class CallRecordTable(BillingTable):
         query = query.where(call_start_t.c.source == phone_number)
         query = query.where(between(call_end_t.c.timestamp, start_date, end_date))
         result = self.connection.execute(query).fetchall()
-        return self.to_dict(result)
+        calls = self.to_dict(result)
+        for call in calls:
+            configs = []
+            where = [self.db.applied_config.call_id == call['call_start_id']]
+            for config in self.db.applied_config.select(where=where):
+                configs.append(config)
+            call['configs'] = configs
+        return calls
 
 
 class BillingDb(object):

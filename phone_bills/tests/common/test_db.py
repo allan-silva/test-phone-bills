@@ -81,7 +81,6 @@ def test_tariff_config(dbo):
     assert 'standard_charge' in tariff_config
     assert 'call_time_charge' in tariff_config
     tariff_configs = dbo.tariff_config.select(where=[dbo.tariff_config.config_end_date == null()])
-    print(tariff_configs)
     assert len(tariff_configs) == 1
 
 

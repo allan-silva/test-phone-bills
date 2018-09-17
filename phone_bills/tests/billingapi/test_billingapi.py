@@ -161,7 +161,7 @@ def test_get_phone_bill():
         assert bill_response['period'] == '4/2017'
         assert len(bill_response['calls']) == 1
         call = bill_response['calls'][0]
-        assert call['duration'] == '1h52m35s'
+        assert call['duration'] == '2d1h52m35s'
         assert call['destination'] == '11282282829'
         assert call['start_date'] == '01/01/2018'
         assert call['start_time'] == '21:42:21'

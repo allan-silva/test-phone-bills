@@ -106,15 +106,15 @@ def test_save_calls(dbo, call_start_record, call_end_record):
 
     applied_cfg = [c for c in applied_configs if c['config_id'] == CONFIG_ID_DT_RANGE_1][0]
     assert applied_cfg['order'] == 2
-    assert applied_cfg['start_time'] == time(22)
-    assert applied_cfg['end_time'] == time(22, 17, 53)
+    assert applied_cfg['start_at'] == datetime(2017, 12, 12, 22)
+    assert applied_cfg['end_at'] == datetime(2017, 12, 12, 22, 17, 53)
     assert applied_cfg['standard_charge'] == 0.36
     assert applied_cfg['call_time_charge'] == 0
 
     applied_cfg = [c for c in applied_configs if c['config_id'] == CONFIG_ID_DT_RANGE_2][0]
     assert applied_cfg['order'] == 1
-    assert applied_cfg['start_time'] == time(21, 57, 13)
-    assert applied_cfg['end_time'] == time(21, 59, 59)
+    assert applied_cfg['start_at'] == datetime(2017, 12, 12, 21, 57, 13)
+    assert applied_cfg['end_at'] == datetime(2017, 12, 12, 21, 59, 59)
     assert applied_cfg['standard_charge'] == 0.36
     assert applied_cfg['call_time_charge'] == 0.09
 

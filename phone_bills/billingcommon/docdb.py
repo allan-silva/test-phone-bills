@@ -14,7 +14,8 @@ class BillingDocDb:
         self.collection = self.db['bills']
         self.collection.create_index([('_id.subscriber', ASCENDING)])
 
-    def insert_bill(self, bill):
+    def insert_bill(self, subscriber, ref_month, ref_year, bill_calls, transaction_id):
+        bill = self.create_bill_entry(subscriber, ref_month, ref_year, bill_calls, transaction_id)
         self.collection.save(bill)
 
     def get_bill(self, subscriber, ref_month, ref_year):

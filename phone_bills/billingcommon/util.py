@@ -23,3 +23,12 @@ def time_add(t, h=0, m=0, s=0):
     td = timedelta(hours=h, minutes=m, seconds=s)
     t_sum = datetime.combine(datetime.today(), t) + td
     return t_sum.time()
+
+
+def walk_in_time(start_date, end_date, break_time):
+    st = start_date.time()
+    d = datetime.combine(start_date.date(), time(st.hour, st.minute, st.second))
+    while d.time() != break_time and d < end_date:
+        td = timedelta(seconds=1)
+        d = d + td
+    return d

@@ -24,11 +24,11 @@ def upgrade(migrate_engine):
             BigInteger,
             ForeignKey(tariff_configuration.c.id),
             primary_key=True),
-        Column('start_time', Time, nullable=False),
-        Column('end_time', Time, nullable=False),
+        Column('order', Integer, nullable=False, primary_key=True),
+        Column('start_at', DateTime, nullable=False),
+        Column('end_at', DateTime, nullable=False),
         Column('standard_charge', DECIMAL(8, 3), nullable=False),
-        Column('call_time_charge', DECIMAL(8, 3), nullable=False),
-        Column('order', Integer, nullable=False))
+        Column('call_time_charge', DECIMAL(8, 3), nullable=False))
     applied_config.create()
 
 
