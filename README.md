@@ -14,8 +14,8 @@
 
 ### Architecture overview
 
-[IMG]
+![alt text](https://raw.githubusercontent.com/allan-silva/test-phone-bills/master/Billing%20System.png)
 
-This kind of system requires a non blocking and high availability endpoints. To achieve this goal, the call events requests and close bill requests are queued to be processed by a worker process listening RabbitMQ queues, in this way the hard processing work does not block the web api clients.
-The choice by PostgreSQL to be the calls repository, was due the consistency, mainly for tariff configurations and relations between calls and applied tariffs.
-The MongoDB was introduced to be a repository for closed bills. The main motivation was his high flexibility, if a already closed bill needs be reprocessed, we can replace the entire document in one command, without necessity to take care of relations and delete/update statements. Also, using another database to store closed bills, reduces the work load of the main database. An important point here is that the closed bills are processed once, and not by request in get bill endpoint.
+This kind of system requires a non blocking and high availability endpoints. To achieve this goal, the call events requests and close bill requests are queued to be processed by a worker process listening RabbitMQ queues, in this way the hard processing work does not block the web api clients.  
+The choice by PostgreSQL to be the calls repository, was due the consistency, mainly for tariff configurations and relations between calls and applied tariffs.  
+The MongoDB was introduced to be a repository for closed bills. The main motivation was his high flexibility, if a already closed bill needs be reprocessed, we can replace the entire document in one command, without necessity to take care of relations and delete/update statements. Also, using another database to store closed bills, reduces the work load of the main database. An important point here is that the closed bills are processed once, and not by request in get bill endpoint.  
