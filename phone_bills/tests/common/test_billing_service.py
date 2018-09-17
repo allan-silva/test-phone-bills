@@ -58,7 +58,7 @@ def test_close_bill(dbo):
             dict(
                 destination='11222222222',
                 start_at=datetime(2010, 12, 31, 23, 57, 13),
-                duration=dict(h=0, m=20, s=40),
+                duration=dict(d=0, h=0, m=20, s=40),
                 price=(0.36+(0.42*20)))
         ]
         mock_instance.insert_bill.assert_called_with(

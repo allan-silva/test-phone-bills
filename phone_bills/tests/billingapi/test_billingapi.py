@@ -142,7 +142,7 @@ def test_bill_close_month_validation(client):
 def test_get_phone_bill():
     def se(subscriber, month, year):
         _id = dict(subscriber=subscriber, month=month, year=year)
-        duration = dict(h=1, m=52, s=35)
+        duration = dict(d=0, h=1, m=52, s=35)
         call = dict(
             destination='11282282829',
             duration=duration,
@@ -161,7 +161,7 @@ def test_get_phone_bill():
         assert bill_response['period'] == '4/2017'
         assert len(bill_response['calls']) == 1
         call = bill_response['calls'][0]
-        assert call['duration'] == '2d1h52m35s'
+        assert call['duration'] == '0d1h52m35s'
         assert call['destination'] == '11282282829'
         assert call['start_date'] == '01/01/2018'
         assert call['start_time'] == '21:42:21'
