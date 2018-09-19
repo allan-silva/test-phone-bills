@@ -30,5 +30,14 @@ Although the pricing rules do not indicates anything about call prices, for call
 
 **Infrastructure Limitation: With this model, the cartesian product between area codes demands a lot of database rows, but HEROKU offers only 10K for the free PostgreSQL instance. Currently the system supports calls between the following area codes: '11', '41', '61', '68' and '99'**
 
+### Rest API:
 
+API documentation is available through the swagger-ui at: https://olist-billing-api-test.herokuapp.com/v1/ui/#/default
+
+**POST - /v1/call:** Posts a call start/end events. The tariff will be applied when a pair of start/end event for the same call_id were identified by the system.  
+**POST - /v1/bill/{subscriber}/close:** Closes the given reference period. Post to this endpoint will publish a message requesting the bill to be closed. All calculated charges and the calls summary will be replicated to the MongoDB.  
+**GET - /v1/bill/{subscriber}:** Gets the closed bill for the given reference period or the bill for the last closed period. **Test evaluation: I supposed that the evaluation requires the bills already closed.**  
+
+### Known issues:
+All known issues are available at: https://github.com/allan-silva/test-phone-bills/issues with open status.
 
