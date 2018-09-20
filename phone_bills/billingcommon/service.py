@@ -41,10 +41,31 @@ class PhoneCallService:
                 config['call_id'] = call_start_record['id']
                 self.db.applied_config.insert(**config)
 
+    def call_record_exists(self, call_record):
+        where = [
+            self.db.call_record.call_id == call_record['call_id'],
+            self.db.call_record.type == call_record['type']
+        ]
+
+        if call_record['type'] == 'start':
+            where_start = [
+                self.db.call_record.source_area_code == call_record['source_area_code'],
+                self.db.call_record.source == call_record['source'],
+                self.db.call_record.destination_area_code == call_record['destination_area_code'],
+                self.db.call_record.destination == call_record['destination']
+            ]
+            where.extend(where_start)
+
+        call_records = self.db.call_record.select(where=where)
+        return bool(call_records)
+
     def save(self, transaction_id, call_record):
         self.log.info(f'Call Record received - {transaction_id} - Record: {call_record}')
         try:
             call_record = self.parser.parse(call_record)
+            if self.call_record_exists(call_record):
+                self.log.warn(f'{transaction_id} - Call record already exists, ignoring...')
+                return
             call_record['transaction_id'] = transaction_id
             ret = self.db.call_record.insert(call_record)
             call_record['id'] = ret['id']

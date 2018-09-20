@@ -165,6 +165,7 @@ class CallRecordTable(BillingTable):
             call_start_t.c.call_id == call_end_t.c.call_id)
         columns = [
             call_start_t.c.id.label('call_start_id'),
+            call_start_t.c.call_id,
             call_start_t.c.destination_area_code.label('area_code'),
             call_start_t.c.destination.label('phone'),
             call_start_t.c.timestamp.label('start_at'),

@@ -71,7 +71,8 @@ class PriceEngine:
         end_date = datetime(ref_year, ref_month, last_day, 23, 59, 59)
         for bill_call in self.db.call_record.calls_for_pricing(
             area_code, phone_number, start_date, end_date):
-            yield dict(destination=f"{bill_call['area_code']}{bill_call['phone']}",
+            yield dict(call_id=bill_call['call_id'],
+                       destination=f"{bill_call['area_code']}{bill_call['phone']}",
                        start_at=bill_call['start_at'],
                        duration=bill_call['end_at'] - bill_call['start_at'],
                        price=self.get_call_charge(bill_call))

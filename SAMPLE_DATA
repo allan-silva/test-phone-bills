@@ -1,0 +1,219 @@
+# These calls are between the numbers 99988526423 (source) and 9993468278 (destination).
+
+# call_id: 70, started at 2016-02-29T12:00:00Z and ended at 2016-02-29T14:00:00Z.
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 70,
+  "destination": "9993468278",
+  "id": 1,
+  "source": "99988526423",
+  "timestamp": "2016-02-29T12:00:00Z",
+  "type": "start"
+}'
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 70,
+  "id": 2,
+  "timestamp": "2016-02-29T14:00:00Z",
+  "type": "end"
+}'
+
+# call_id: 71, started at 2017-12-12T15:07:13Z and ended at 2017-12-12T15:14:56Z.
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 71,
+  "destination": "9993468278",
+  "id": 3,
+  "source": "99988526423",
+  "timestamp": "2017-12-12T15:07:13Z",
+  "type": "start"
+}'
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 71,
+  "id": 4,
+  "timestamp": "2017-12-12T15:14:56Z",
+  "type": "end"
+}'
+
+# call_id: 72, started at 2017-12-12T22:47:56Z and ended at 2017-12-12T22:50:56Z.
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 72,
+  "destination": "9993468278",
+  "id": 5,
+  "source": "99988526423",
+  "timestamp": "2017-12-12T22:47:56Z",
+  "type": "start"
+}'
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 72,
+  "id": 6,
+  "timestamp": "2017-12-12T22:50:56Z",
+  "type": "end"
+}'
+
+# call_id: 73, started at 2017-12-12T21:57:13Z and ended at 2017-12-12T22:10:56Z.
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 73,
+  "destination": "9993468278",
+  "id": 7,
+  "source": "99988526423",
+  "timestamp": "2017-12-12T21:57:13Z",
+  "type": "start"
+}'
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 73,
+  "id": 8,
+  "timestamp": "2017-12-12T22:10:56Z",
+  "type": "end"
+}'
+
+# call_id: 74, started at 2017-12-12T04:57:13Z and ended at 2017-12-12T06:10:56Z.
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 74,
+  "destination": "9993468278",
+  "id": 9,
+  "source": "99988526423",
+  "timestamp": "2017-12-12T04:57:13Z",
+  "type": "start"
+}'
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 74,
+  "id": 10,
+  "timestamp": "2017-12-12T06:10:56Z",
+  "type": "end"
+}'
+
+# call_id: 75, started at 2017-12-12T21:57:13Z and ended at 2017-12-13T22:10:56Z.
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 75,
+  "destination": "9993468278",
+  "id": 11,
+  "source": "99988526423",
+  "timestamp": "2017-12-12T21:57:13Z",
+  "type": "start"
+}'
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 75,
+  "id": 12,
+  "timestamp": "2017-12-13T22:10:56Z",
+  "type": "end"
+}'
+
+# call_id: 76, started at 2017-12-12T15:07:58Z and ended at 2017-12-12T15:12:56Z.
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 76,
+  "destination": "9993468278",
+  "id": 13,
+  "source": "99988526423",
+  "timestamp": "2017-12-12T15:07:58Z",
+  "type": "start"
+}'
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 76,
+  "id": 14,
+  "timestamp": "2017-12-12T15:12:56Z",
+  "type": "end"
+}'
+
+# call_id: 77, started at 2018-02-28T21:57:13Z and ended at 2018-03-01T22:10:56Z.
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 77,
+  "destination": "9993468278",
+  "id": 15,
+  "source": "99988526423",
+  "timestamp": "2018-02-28T21:57:13Z",
+  "type": "start"
+}'
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/call \
+  -H 'content-type: application/json' \
+  -d '{
+  "call_id": 77,
+  "id": 16,
+  "timestamp": "2018-03-01T22:10:56Z",
+  "type": "end"
+}'
+
+# Closing bills
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/bill/99988526423/close \
+  -H 'content-type: application/json' \
+  -d '{
+  "month": 2,
+  "year": 2016
+}'
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/bill/99988526423/close \
+  -H 'content-type: application/json' \
+  -d '{
+  "month": 12,
+  "year": 2017
+}'
+
+curl -X POST \
+  http://127.0.0.1:8000/v1/bill/99988526423/close \
+  -H 'content-type: application/json' \
+  -d '{
+  "month": 3,
+  "year": 2018
+}'
