@@ -35,7 +35,7 @@ def bill_close(subscriber, ref_period, transaction):
     return transaction, 202
 
 
-def get_bill(subscriber, month, year):
+def get_bill(subscriber, month=None, year=None):
     try:
         bill = app.docdb.get_bill(subscriber, month, year)
         if bill:

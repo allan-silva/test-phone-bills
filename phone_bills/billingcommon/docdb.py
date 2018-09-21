@@ -1,7 +1,7 @@
 import os
 
 from datetime import datetime
-from pymongo import MongoClient, ASCENDING
+from pymongo import MongoClient, ASCENDING, DESCENDING
 
 
 MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://localhost:27017/')
@@ -19,8 +19,14 @@ class BillingDocDb:
         self.collection.save(bill)
 
     def get_bill(self, subscriber, ref_month, ref_year):
-        id = dict(subscriber=subscriber, month=ref_month, year=ref_year)
-        return self.collection.find_one({'_id': id})
+        if ref_month and ref_year:
+            id = dict(subscriber=subscriber, month=ref_month, year=ref_year)
+            return self.collection.find_one({'_id': id})
+        sort_fields = [('_id.year', DESCENDING), ('_id.month', DESCENDING)]
+        for d in self.collection.find({'_id.subscriber': subscriber})\
+                                .sort(sort_fields)\
+                                .limit(1):
+            return d
 
     def create_bill_entry(self, subscriber, ref_month, ref_year, bill_calls, transaction_id):
         id = dict(subscriber=subscriber, month=ref_month, year=ref_year)
