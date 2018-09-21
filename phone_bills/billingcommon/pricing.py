@@ -1,7 +1,7 @@
 from calendar import monthrange
 from datetime import datetime, time, timedelta
 
-# This is a external package, but I'm the author
+# This is an external package, but I'm the author
 # https://github.com/MicroarrayTecnologia/py-time-between
 from timebetween import is_time_between
 from phone_bills.billingcommon.logging import configure_log
@@ -59,10 +59,13 @@ class PriceEngine:
                 charge += config['standard_charge']
             minutes = call_duration(config['start_at'], config['end_at'])
             charge += minutes * config['call_time_charge']
-            if min_order != max_order and max_order != config['order']:
+            transition_time_conditions = [
+                config['order'] > min_order,
+                config['order'] < max_order
+            ]
+            if all(transition_time_conditions):
                 charge += config['call_time_charge']
             charges.append(charge)
-            self.log.debug(f"S: {config['start_at']} - E {config['end_at']} - M: {minutes} - P: {charge} - O: {config['order']}")
         return sum(charges)
 
     def get_bill_calls(self, area_code, phone_number, ref_month, ref_year):

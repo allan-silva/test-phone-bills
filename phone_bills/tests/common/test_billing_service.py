@@ -56,6 +56,7 @@ def test_close_bill(dbo):
         assert mock_instance.insert_bill.call_count == 1
         calls= [
             dict(
+                call_id='40',
                 destination='11222222222',
                 start_at=datetime(2010, 12, 31, 23, 57, 13),
                 duration=dict(d=0, h=0, m=20, s=40),
