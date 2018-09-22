@@ -5,7 +5,8 @@ from phone_bills.billingcommon.docdb import BillingDocDb
 from phone_bills.billingcommon.service import PhoneCallService, BillingService
 
 
-billing_database = create_db(os.getenv('DATABASE_URL', 'postgresql://billingdb_user:billingdb_pwd@0.0.0.0:5432/billingdb'))
+db_url = os.getenv('DATABASE_URL', 'postgresql://billingdb_user:billingdb_pwd@0.0.0.0:5432/billingdb')
+billing_database = create_db(db_url)
 billing_doc_db = BillingDocDb()
 
 

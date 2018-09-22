@@ -3,7 +3,7 @@
 from datetime import datetime
 from sqlalchemy import (
     between, create_engine, Column, DateTime, Integer, BigInteger,
-    DECIMAL, ForeignKey, join, MetaData, null, select, String, Table, Time)
+    DECIMAL, ForeignKey, join, MetaData, select, String, Table, Time)
 from sqlalchemy.orm import aliased
 
 
@@ -79,16 +79,18 @@ class TariffConfigurationTable(BillingTable):
             Column('config_start_date', DateTime, nullable=False),
             Column('config_end_date', DateTime),
             Column('conditions_id',
-                    IntegerType,
-                    ForeignKey(tariff_conditions_table.id),
-                    nullable=False),
+                   IntegerType,
+                   ForeignKey(tariff_conditions_table.id),
+                   nullable=False),
             Column('standard_charge', DECIMAL(8, 3, asdecimal=False), nullable=False),
             Column('call_time_charge', DECIMAL(8, 3, asdecimal=False), nullable=False))
         super().__init__(db, table)
 
     def get_current_configs(self, source_area_code, dest_area_code, timestamp):
-        cfg_con_join = join(self.t, self.db.tariff_condition.t,
-                 self.conditions_id == self.db.tariff_condition.id)
+        cfg_con_join = join(
+            self.t,
+            self.db.tariff_condition.t,
+            self.conditions_id == self.db.tariff_condition.id)
         columns = [
             self.id, self.standard_charge,
             self.call_time_charge,
@@ -100,17 +102,15 @@ class TariffConfigurationTable(BillingTable):
         query = query.where(self.db.tariff_condition.source_area_code == source_area_code)
         query = query.where(self.db.tariff_condition.destination_area_code == dest_area_code)
         configs = self.connection.execute(query).fetchall()
-        configs = [{'config_id': config_id,
-                    'standard_charge': standard_charge,
-                    'call_time_charge': call_time_charge,
-                    'condition_id': condition_id,
-                    'start_at': start_at,
-                    'end_at': end_at} for config_id,
-                                          standard_charge,
-                                          call_time_charge,
-                                          condition_id,
-                                          start_at,
-                                          end_at in configs]
+        configs = [{
+            'config_id': config_id,
+            'standard_charge': standard_charge,
+            'call_time_charge': call_time_charge,
+            'condition_id': condition_id,
+            'start_at': start_at,
+            'end_at': end_at
+        } for config_id, standard_charge, call_time_charge, condition_id, start_at, end_at
+          in configs]
         return configs
 
 
@@ -120,9 +120,9 @@ class AppliedConfigTable(BillingTable):
             'applied_config',
             metadata,
             Column('call_id',
-                    IntegerType,
-                    ForeignKey(call_records_table.id),
-                    primary_key=True),
+                   IntegerType,
+                   ForeignKey(call_records_table.id),
+                   primary_key=True),
             Column('config_id',
                    IntegerType,
                    ForeignKey(tariff_conditions_table.id),
@@ -142,7 +142,7 @@ class CallRecordTable(BillingTable):
             metadata,
             Column('id', IntegerType, autoincrement=True, primary_key=True),
             Column('created_date', DateTime, nullable=False),
-            Column('external_id', IntegerType, nullable=False), # "id": Record unique identificator
+            Column('external_id', IntegerType, nullable=False),  # "id": Record unique identificator
             Column('call_id', String, nullable=False),
             Column('type', String, nullable=False),
             Column('source_area_code', String, nullable=True),
@@ -199,9 +199,11 @@ class BillingDb(object):
         if self.engine.name == 'sqlite':
             int_type = Integer
         self.tariff_conditions_table = TariffConditionsTable(self, self.metadata, int_type)
-        self.tariff_config_table = TariffConfigurationTable(self, self.metadata, int_type, self.tariff_conditions_table)
+        self.tariff_config_table = TariffConfigurationTable(
+            self, self.metadata, int_type, self.tariff_conditions_table)
         self.call_record_table = CallRecordTable(self, self.metadata, int_type, self.tariff_config_table)
-        self.applied_config_table = AppliedConfigTable(self, self.metadata, int_type, self.call_record_table, self.tariff_config_table)
+        self.applied_config_table = AppliedConfigTable(
+            self, self.metadata, int_type, self.call_record_table, self.tariff_config_table)
 
     @property
     def tariff_condition(self):

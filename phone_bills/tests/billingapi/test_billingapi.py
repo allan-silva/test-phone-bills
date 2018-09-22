@@ -147,7 +147,7 @@ def test_get_phone_bill():
             destination='11282282829',
             duration=duration,
             price=0.42,
-            start_at = datetime(2018, 1, 1, 21, 42, 21))
+            start_at=datetime(2018, 1, 1, 21, 42, 21))
         return dict(_id=_id, calls=[call])
     with patch('phone_bills.billingcommon.docdb.BillingDocDb') as m:
         m().get_bill.side_effect = se

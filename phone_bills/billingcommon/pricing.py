@@ -1,11 +1,11 @@
 from calendar import monthrange
-from datetime import datetime, time, timedelta
+from datetime import datetime, timedelta
 
 # This is an external package, but I'm the author
 # https://github.com/MicroarrayTecnologia/py-time-between
 from timebetween import is_time_between
 from phone_bills.billingcommon.logging import configure_log
-from phone_bills.billingcommon.util import call_duration, time_add, walk_in_time
+from phone_bills.billingcommon.util import call_duration, walk_in_time
 
 
 class PriceEngine:
@@ -36,7 +36,6 @@ class PriceEngine:
             if not configs:
                 break
             end_date = walk_in_time(start_date, end_at, config['end_at'])
-            end_time = end_date.time()
             config_order += 1
             applied_config = dict(
                 config_id=config['config_id'],
@@ -73,7 +72,7 @@ class PriceEngine:
         _, last_day = monthrange(ref_year, ref_month)
         end_date = datetime(ref_year, ref_month, last_day, 23, 59, 59)
         for bill_call in self.db.call_record.calls_for_pricing(
-            area_code, phone_number, start_date, end_date):
+                area_code, phone_number, start_date, end_date):
             yield dict(call_id=bill_call['call_id'],
                        destination=f"{bill_call['area_code']}{bill_call['phone']}",
                        start_at=bill_call['start_at'],

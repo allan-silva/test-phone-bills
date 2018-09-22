@@ -1,5 +1,3 @@
-import re
-
 from datetime import datetime
 from phone_bills.billingcommon.util import extract_phone_number
 

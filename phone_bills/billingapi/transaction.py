@@ -2,6 +2,7 @@ import uuid
 
 from connexion import request
 
+
 def register_transaction_request_generator(app):
     @app.before_request
     def create_transaction_id():

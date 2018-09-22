@@ -13,7 +13,7 @@ class BillResponseParser:
                 start_date=start_at.strftime('%d/%m/%Y'),
                 start_time=start_at.strftime('%H:%M:%S'),
                 duration=f"{duration['d']}d{duration['h']}h{duration['m']}m{duration['s']}s",
-                price=round(call['price'],2))
+                price=round(call['price'], 2))
             calls.append(bill_call)
         bill['calls'] = calls
         return bill

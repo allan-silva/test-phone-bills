@@ -1,5 +1,6 @@
 import connexion
-import phone_bills.billingapi.json_schema_format # Bringing the formatters checkers to context
+# Bringing the formatters checkers to context
+import phone_bills.billingapi.json_schema_format  # noqa
 
 from phone_bills.billingapi.transaction import register_transaction_request_generator
 from phone_bills.billingcommon.docdb import configure_docdb

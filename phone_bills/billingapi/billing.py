@@ -1,4 +1,4 @@
-from connexion import request, problem
+from connexion import problem
 from flask import current_app as app
 
 from phone_bills.billingapi.transaction import with_transaction

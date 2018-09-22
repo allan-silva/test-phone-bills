@@ -1,5 +1,6 @@
-from sqlalchemy import *
-from migrate import *
+from sqlalchemy import BigInteger, Column, DateTime, DECIMAL, ForeignKey, Integer, MetaData, Table
+from migrate import ForeignKeyConstraint
+
 
 def upgrade(migrate_engine):
     metadata = MetaData(bind=migrate_engine)

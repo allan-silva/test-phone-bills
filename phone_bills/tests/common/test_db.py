@@ -10,25 +10,25 @@ def insert_data(dbo):
         destination_area_code='11',
         start_at=time(hour=6),
         end_at=time(hour=21, minute=59, second=59))
-    tariff_condition_2 = dbo.tariff_condition.insert(
+    dbo.tariff_condition.insert(
         source_area_code='99',
         destination_area_code='41',
         start_at=time(hour=22),
         end_at=time(hour=5, minute=59, second=59))
-    tariff_config_1 = dbo.tariff_config.insert(
+    dbo.tariff_config.insert(
         created_date=datetime.now(),
         config_start_date=datetime.now(),
         config_end_date=datetime.now(),
         conditions_id=tariff_condition_1['id'],
         standard_charge=0.36,
         call_time_charge=0.09)
-    tariff_config_2 = dbo.tariff_config.insert(
+    dbo.tariff_config.insert(
         created_date=datetime.now(),
         config_start_date=datetime.now(),
         conditions_id=tariff_condition_1['id'],
         standard_charge=0.36,
         call_time_charge=0.09)
-    call_start = dbo.call_record.insert(
+    dbo.call_record.insert(
         dict(
             created_date=datetime.now(),
             external_id=42,
@@ -39,7 +39,7 @@ def insert_data(dbo):
             destination_area_code='11',
             destination='27227272',
             timestamp=datetime.now()))
-    call_end = dbo.call_record.insert(
+    dbo.call_record.insert(
         dict(
             created_date=datetime.now(),
             external_id=4242,
@@ -52,7 +52,7 @@ def insert_data(dbo):
 def test_tariff_conditions(dbo):
     tariff_conditions = dbo.tariff_condition.select()
     assert len(tariff_conditions) == 2
-    tariff_condition =  tariff_conditions[0]
+    tariff_condition = tariff_conditions[0]
     assert 'id' in tariff_condition
     assert tariff_condition['id'] > 0
     assert 'source_area_code' in tariff_condition

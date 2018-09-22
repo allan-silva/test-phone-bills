@@ -1,6 +1,5 @@
 import os
 
-from datetime import datetime
 from pymongo import MongoClient, ASCENDING, DESCENDING
 
 
