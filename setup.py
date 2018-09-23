@@ -16,7 +16,7 @@ with open(path.join(here, 'requirements.txt')) as f:
 
 setuptools.setup(
     name="phone_bills",
-    version="0.0.1",
+    version="0.1.0",
     author="Allan Silva",
     author_email="allan.tavares@allantavares.com.br",
     description="Phone Bills API",
